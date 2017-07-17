@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# prog name
+PROG_NAME="autoconf"
+# cmd name
+CMD_NAME="autoconf"
+# url
+BASE_URL="ftp://alpha.gnu.org/pub/gnu/autoconf/autoconf-2.68b.tar.gz"
+# version
+CUR_VERSION="v2.68b"
+
+# preface
+echo ">> USE.sh installer"
+echo ">> Program to install: $PROG_NAME"
+
+# request for sudo
+[[ $USER == 'root' ]] || { echo "Root privilege required. Please sudo first"; exit 1; }
+
+# create tmp directory
+TMPDIR=$(mktemp -d)
+
+# check if git command exists or not
+if type "$CMD_NAME" >> "/dev/null"; then
+    echo "You already have $PROG_NAME installed"
+    while true; do
+        read -p "Do you wish to install $CUR_VERSION of this program?[y/N] " yn
+        case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) exit 0;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+fi
+
+# download git through curl
+PROG_LOC="$TMPDIR/$PROG_NAME.tar.gz"
+curl -L -o "$PROG_LOC" "$BASE_URL"
+
+# get tar folder first
+TARDIR="$TMPDIR/$(tar -tzf $PROG_LOC | head -1 | cut -f1 -d'/')"
+
+# then untar
+tar -xzf "$PROG_LOC" -C "$TMPDIR"
+
+# steps from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+make -C "$TARDIR" configure || { echo "make configure failed"; exit 1; }
+make -C "$TARDIR" || { echo "make failed"; exit 1; }
+make -C "$TARDIR" install || { echo "make install failed"; exit 1; }
+
+echo ">> Installation complete!"

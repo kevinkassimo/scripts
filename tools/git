@@ -1,14 +1,17 @@
 #!/bin/bash
 
+# prog name
+PROG_NAME="git"
+# cmd name
+CMD_NAME="git"
 # url
 BASE_URL="https://www.kernel.org/pub/software/scm/git/git-2.13.3.tar.gz"
-
 # version
 CUR_VERSION="v2.13.3"
 
 # preface
 echo ">> USE.sh installer"
-echo ">> Program to install: git"
+echo ">> Program to install: $PROG_NAME"
 
 # request for sudo
 [[ $USER == 'root' ]] || { echo "Root privilege required. Please sudo first"; exit 1; }
@@ -17,10 +20,10 @@ echo ">> Program to install: git"
 TMPDIR=$(mktemp -d)
 
 # check if git command exists or not
-if type "git" >> "/dev/null"; then
+if type "$CMD_NAME" >> "/dev/null"; then
     # check if the version of git is > 2. If so, then do not install
     if [[ $(echo $(git --version) | cut -d" " -f3 | cut -c1) -ge 2 ]]; then
-        echo "Git current version is above 2, should be generally usable"
+        echo "Git is currently installed with version above 2"
         while true; do
             read -p "Do you wish to install $CUR_VERSION of this program?[y/N] " yn
             case $yn in
@@ -33,16 +36,19 @@ if type "git" >> "/dev/null"; then
 fi
 
 # download git through curl
-GITLOC="$TMPDIR/git.tar.gz"
-curl -L -o "$GITLOC" "$BASE_URL"
+PROG_LOC="$TMPDIR/$PROG_NAME.tar.gz"
+curl -L -o "$PROG_LOC" "$BASE_URL"
 
 # get tar folder first
-TARDIR="$TMPDIR/$(tar -tzf $GITLOC | head -1 | cut -f1 -d'/')"
+TARDIR="$TMPDIR/$(tar -tzf $PROG_LOC | head -1 | cut -f1 -d'/')"
 
 # then untar
-tar -xzf "$GITLOC" -C "$TMPDIR"
+tar -xzf "$PROG_LOC" -C "$TMPDIR"
 
 # steps from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+if type "autoconf" >> "/dev/null"; then
+    bash <(http://use.sh/tools/autoconf) || { echo 'dependency `autoconf` install failed'; exit 1; }
+fi
 make -C "$TARDIR" configure || { echo "make configure failed"; exit 1; }
 "$TARDIR/configure" --prefix=/usr
 make -C "$TARDIR" all doc info || { echo "make all doc info failed"; exit 1; }
