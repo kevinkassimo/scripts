@@ -20,7 +20,7 @@ echo ">> Program to install: $PROG_NAME"
 TMPDIR=$(mktemp -d)
 
 # check if git command exists or not
-if type "$CMD_NAME" 2>&1 > "/dev/null"; then
+if type "$CMD_NAME" &> /dev/null; then
     # check if the version of git is > 2. If so, then do not install
     if [[ $(echo $(git --version) | cut -d" " -f3 | cut -c1) -ge 2 ]]; then
         echo "Git is currently installed with version above 2"
@@ -46,7 +46,7 @@ TARDIR="$TMPDIR/$(tar -tzf $PROG_LOC | head -1 | cut -f1 -d'/')"
 tar -xzf "$PROG_LOC" -C "$TMPDIR"
 
 # steps from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
-if ! type "autoconf" 2>&1 > "/dev/null"; then
+if ! type "autoconf" &> /dev/null; then
     echo `autoconf is required to build the program`
     bash <(http://use.sh/tools/autoconf) || { echo 'dependency `autoconf` install failed'; exit 1; }
 fi
