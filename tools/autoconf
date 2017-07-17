@@ -43,7 +43,7 @@ TARDIR="$TMPDIR/$(tar -tzf $PROG_LOC | head -1 | cut -f1 -d'/')"
 tar -xzf "$PROG_LOC" -C "$TMPDIR"
 
 # steps from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
-make -C "$TARDIR" configure || { echo "make configure failed"; exit 1; }
+"$TARDIR/configure" || { echo "./configure failed"; exit 1; }
 make -C "$TARDIR" || { echo "make failed"; exit 1; }
 make -C "$TARDIR" install || { echo "make install failed"; exit 1; }
 
