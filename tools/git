@@ -1,0 +1,44 @@
+#!/bin/bash
+
+BASE_URL="https://www.kernel.org/pub/software/scm/git/git-2.13.3.tar.gz"
+
+# preface
+echo ">> USE.sh installer"
+echo ">> Program to install: git"
+
+# request for sudo
+[[ $USER == 'root' ]] || echo "Root privilege required. Please sudo first"; exit 1
+
+# create tmp directory
+TMPDIR=$(mktemp -d)
+
+# check if git command exists or not
+if type "git" >> "/dev/null"; then
+    # check if the version of git is > 2. If so, then do not install
+    if [[ $(echo $(git --version) | cut -d" " -f3 | cut -c1) -ge 2 ]]; then
+        echo "Git current version is above 2, should be generally usable"
+        while true; do
+            read -p "Do you wish to install latest version of this program?" yn
+            case $yn in
+                [Yy]* ) break;;
+                [Nn]* ) exit 0;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    fi
+fi
+
+# download git through curl
+GITLOC="$TMPDIR/git.tar.gz"
+curl -L -o "$GITLOC" "$BASE_URL"
+
+# get tar folder first
+TARDIR="$TMPDIR/$(tar -tzf $GITLOC | head -1 | cut -f1 -d'/')"
+
+# steps from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+make -C "$TARDIR" configure || echo "make configure failed"; exit 1
+"$TARDIR/configure" --prefix=/usr
+make -C "$TARDIR" all doc info || echo "make all doc info failed"; exit 1
+make -C "$TARDIR" install install-doc install-html install-info || echo "make install install-doc install-html install-info failed"; exit 1
+
+echo ">> Installation complete!"
