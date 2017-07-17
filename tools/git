@@ -1,6 +1,10 @@
 #!/bin/bash
 
+# url
 BASE_URL="https://www.kernel.org/pub/software/scm/git/git-2.13.3.tar.gz"
+
+# version
+CUR_VERSION="v2.13.3"
 
 # preface
 echo ">> USE.sh installer"
@@ -18,7 +22,7 @@ if type "git" >> "/dev/null"; then
     if [[ $(echo $(git --version) | cut -d" " -f3 | cut -c1) -ge 2 ]]; then
         echo "Git current version is above 2, should be generally usable"
         while true; do
-            read -p "Do you wish to install latest version of this program?" yn
+            read -p "Do you wish to install $CUR_VERSION of this program?" yn
             case $yn in
                 [Yy]* ) break;;
                 [Nn]* ) exit 0;;
