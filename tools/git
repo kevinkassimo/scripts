@@ -11,7 +11,7 @@ echo ">> USE.sh installer"
 echo ">> Program to install: git"
 
 # request for sudo
-[[ $USER == 'root' ]] || (echo "Root privilege required. Please sudo first" && exit 1)
+[[ $USER == 'root' ]] || { echo "Root privilege required. Please sudo first"; exit 1; }
 
 # create tmp directory
 TMPDIR=$(mktemp -d)
@@ -22,7 +22,7 @@ if type "git" >> "/dev/null"; then
     if [[ $(echo $(git --version) | cut -d" " -f3 | cut -c1) -ge 2 ]]; then
         echo "Git current version is above 2, should be generally usable"
         while true; do
-            read -p "Do you wish to install $CUR_VERSION of this program?" yn
+            read -p "Do you wish to install $CUR_VERSION of this program?[y/N] " yn
             case $yn in
                 [Yy]* ) break;;
                 [Nn]* ) exit 0;;
@@ -40,15 +40,12 @@ curl -L -o "$GITLOC" "$BASE_URL"
 TARDIR="$TMPDIR/$(tar -tzf $GITLOC | head -1 | cut -f1 -d'/')"
 
 # then untar
-tar -xzf "$GITLOC" "$TMPDIR"
-
-ls $TMPDIR
-
+tar -xzf "$GITLOC" -C "$TMPDIR"
 
 # steps from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
-make -C "$TARDIR" configure || (echo "make configure failed" && exit 1)
+make -C "$TARDIR" configure || { echo "make configure failed"; exit 1; }
 "$TARDIR/configure" --prefix=/usr
-make -C "$TARDIR" all doc info || (echo "make all doc info failed" && exit 1)
-make -C "$TARDIR" install install-doc install-html install-info || (echo "make install install-doc install-html install-info failed" && exit 1)
+make -C "$TARDIR" all doc info || { echo "make all doc info failed"; exit 1; }
+make -C "$TARDIR" install install-doc install-html install-info || { echo "make install install-doc install-html install-info failed"; exit 1; }
 
 echo ">> Installation complete!"
