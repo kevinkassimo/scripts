@@ -40,7 +40,7 @@ curl -L -o "$GITLOC" "$BASE_URL"
 TARDIR="$TMPDIR/$(tar -tzf $GITLOC | head -1 | cut -f1 -d'/')"
 
 # then untar
-tar -xzf "$GITLOC"
+tar -xzf "$GITLOC" "$TMPDIR"
 
 ls $TMPDIR
 
