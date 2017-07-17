@@ -55,4 +55,4 @@ make -C "$TARDIR" configure || { echo "make configure failed"; exit 1; }
 make -C "$TARDIR" all doc info || { echo "make all doc info failed"; exit 1; }
 make -C "$TARDIR" install install-doc install-html install-info || { echo "make install install-doc install-html install-info failed"; exit 1; }
 
-echo ">> Installation complete!"
+echo '>> Installation complete!'
