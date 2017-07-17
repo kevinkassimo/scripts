@@ -40,7 +40,10 @@ curl -L -o "$GITLOC" "$BASE_URL"
 TARDIR="$TMPDIR/$(tar -tzf $GITLOC | head -1 | cut -f1 -d'/')"
 
 # then untar
-tar -xzf $GITLOC
+tar -xzf "$GITLOC"
+
+ls $TMPDIR
+
 
 # steps from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 make -C "$TARDIR" configure || (echo "make configure failed" && exit 1)
