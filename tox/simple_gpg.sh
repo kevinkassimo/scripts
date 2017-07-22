@@ -9,8 +9,11 @@
 # options
 # -c: create new key pair
 # -l: list all keys on your computer
-# -s [KEYID]: submit your current public key to pgp.mit.edu server so others can find you
+# -s [KEYID]: submit your current public key to pgp server so others can find you
 # -v [KEYID]: export public key
+# -a [KEYID or EMAIL]: get certain public key from pgp server, given the abbr. KEYID
+# -e [FILENAME]: encrypt file with certain key (you need to specify later on)
+# -d [FILENAME]: decode file with detected private key, with export file named: decryped.txt (you can change the extension yourself if it is some other formatted files, e.g. .mp3)
 
 echo 'Simple GPG tools for basic functioning by @kevinkassimo'
 
@@ -97,7 +100,7 @@ while getopts "clv:s:a:e:d:" opt; do
     "d")
         echo ">> Decrypting file $OPTARG"
         gpg --decrypt "$OPTARG" || { echo 'Some error occurred'; exit 1; }
-        echo ">> Success!"
+        echo ">> Success! Decoded file is named as 'decryped.txt' under this directory"
         exit 0
         ;;
     esac
