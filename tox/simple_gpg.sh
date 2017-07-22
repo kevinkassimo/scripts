@@ -1,6 +1,18 @@
 #!/bin/bash
 
-echo ">> Simple GPG tools for basic functioning "
+# How to install
+# enter the following:
+#    curl -s -L http://use.sh/tox/simple_gpg.sh > simple_gpg.sh
+# and then do
+#    sudo chmod +x simple_gpg.sh
+
+# options
+# -c: create new key pair
+# -l: list all keys on your computer
+# -s [KEYID]: submit your current public key to pgp.mit.edu server so others can find you
+# -v [KEYID]: export public key
+
+echo 'Simple GPG tools for basic functioning by @kevinkassimo'
 
 # dependency checks
 
@@ -22,7 +34,7 @@ if ! type "gpg" &> /dev/null; then
     brew install gpg
 fi
 
-elif [[ -z $UNAME_UBUNTU ]]; then
+elif ! [[ -z $UNAME_UBUNTU ]]; then
 
 if ! type "gpg" &> /dev/null; then
     echo '!!! Warning: GPG is NOT installed yet !!!'
@@ -33,9 +45,11 @@ fi
 else
     echo "unsupported OS!"
 fi
-    
+
+PGP_SERVER='keyserver.ubuntu.com'
+
 # parse options
-while getopts "cls:a:e:d:" opt; do
+while getopts "clv:s:a:e:d:" opt; do
     case "$opt" in
     "c")
         # create a gpg keypair
@@ -52,16 +66,22 @@ while getopts "cls:a:e:d:" opt; do
         gpg --list-key
         exit 0
         ;;
+    "v")
+        # show public key detail
+        echo '>> Showing public key details'
+        gpg --armor --export "$OPTARG"
+        exit 0
+        ;;
     "s")
         # submit key to pgp.mit.edu keyserver
-        echo ">> Submitting public key $OPTARG to pgp.mit.edu key server: "
-        gpg --keyserver pgp.mit.com --send-key "$OPTARG" || { echo 'Error exit'; exit 1; }
+        echo ">> Submitting public key $OPTARG to $PGP_SERVER key server: "
+        gpg --keyserver $PGP_SERVER --send-keys "$OPTARG" || { echo 'Error exit'; exit 1; }
         exit 0
         ;;
     "a")
         # fetch someone from the pgp.mit.edu server
-        echo ">> Fetching public key $OPTARG from pgp.mit.edu key server: "
-        gpg --keyserver pgp.mit.com --recv-key "$OPTARG" || { echo 'Error exit'; exit 1; }
+        echo ">> Fetching public key $OPTARG from $PGP_SERVER key server: "
+        gpg --keyserver $PGP_SERVER --recv-keys "$OPTARG" || { echo 'Error exit'; exit 1; }
         exit 0
         ;;
     "e")
